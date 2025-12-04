@@ -3,8 +3,10 @@ package com.example.demo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
 
 @Service
@@ -14,23 +16,50 @@ public class SMSService {
     private String apiKey;
 
     @Value("${mobile_to}")
-    private String mobileTo;
+    private String defaultMobile;
 
-    public void sendSMS(Map<String, String> data) throws Exception {
+    /**
+     * Sends OTP via SMS using 2Factor AUTOGEN API.
+     * Accepts form data from frontend but only logs it.
+     */
+    public String sendOtp(Map<String, String> data) {
+        try {
+            System.out.println("Received Form Data: " + data);
 
-        String message = "Appointment Details:\n" +
-                "Name: " + data.get("name") + "\n" +
-                "Age: " + data.get("age") + "\n" +
-                "Time: " + data.get("time") + "\n" +
-                "Place: " + data.get("place");
+            // IMPORTANT: SMS endpoint (NOT voice)
+            String urlString = "https://2factor.in/API/V1/"
+                    + apiKey
+                    + "/SMS/"
+                    + defaultMobile
+                    + "/AUTOGEN";
 
-        String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8.toString());
+            System.out.println("Final OTP URL: " + urlString);
 
-        System.out.println("Message to send: " + encodedMessage);
+            // Create connection
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
 
-        // Here you will call the actual 2Factor API
-        // Just printing for now
-        System.out.println("API KEY: " + apiKey);
-        System.out.println("Sending SMS to: " + mobileTo);
+            // Read response
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream())
+            );
+
+            StringBuilder response = new StringBuilder();
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                response.append(line);
+            }
+
+            br.close();
+
+            System.out.println("OTP Response: " + response);
+            return response.toString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error sending OTP: " + e.getMessage();
+        }
     }
 }

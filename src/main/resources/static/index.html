@@ -1,84 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Appointment Registration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Form</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 50px;
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
+
         form {
-            max-width: 400px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #f9f9f9;
+            width: 350px;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        input, button {
+
+        label {
+            font-weight: bold;
+            margin-top: 12px;
+            display: block;
+            color: #333;
+        }
+
+        input {
             width: 100%;
             padding: 10px;
-            margin: 8px 0;
-            box-sizing: border-box;
-            border-radius: 4px;
+            margin-top: 6px;
             border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
         }
+
         button {
-            background-color: #4CAF50;
-            color: white;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 16px;
             border: none;
+            border-radius: 6px;
+            background: #007bff;
+            color: white;
             cursor: pointer;
         }
+
         button:hover {
-            background-color: #45a049;
+            background: #0056b3;
         }
+
         #msg {
             margin-top: 15px;
+            text-align: center;
             font-weight: bold;
-            color: green;
+            font-size: 15px;
         }
     </style>
 </head>
+
 <body>
-    <h2>Appointment Registration</h2>
-    <form id="appointmentForm">
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name" required>
 
-        <label for="age">Age:</label>
-        <input type="number" name="age" id="age" required>
+<form id="appointmentForm">
+    <label>Name:</label>
+    <input type="text" name="name" required>
 
-        <label for="time">Appointment Time:</label>
-        <input type="time" name="time" id="time" required>
+    <label>Age:</label>
+    <input type="number" name="age" required>
 
-        <label for="place">Place:</label>
-        <input type="text" name="place" id="place" required>
+    <label>Appointment Time:</label>
+    <input type="time" name="time" required>
 
-        <button type="submit">Register</button>
-    </form>
+    <label>Place:</label>
+    <input type="text" name="place" required>
 
-    <p id="msg"></p>
+    <button type="submit">Register</button>
+</form>
 
-    <script>
-        document.getElementById('appointmentForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const data = Object.fromEntries(new FormData(e.target));
-            
-            try {
-                let response = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                const text = await response.text();
-                document.getElementById('msg').innerText = text;
-                e.target.reset(); // clear the form after submission
-            } catch (err) {
-                document.getElementById('msg').innerText = 'Error sending appointment. Try again!';
-                document.getElementById('msg').style.color = 'red';
-            }
-        };
-    </script>
+<p id="msg"></p>
+
+<script>
+    document.getElementById('appointmentForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
+        try {
+            let response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const text = await response.text();
+            document.getElementById('msg').innerText = text;
+            document.getElementById('msg').style.color = 'green';
+            e.target.reset();
+        } catch (err) {
+            document.getElementById('msg').innerText = 'Error sending appointment!';
+            document.getElementById('msg').style.color = 'red';
+        }
+    };
+</script>
+
 </body>
 </html>
