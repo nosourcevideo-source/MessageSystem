@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Appointment Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        form {
+            max-width: 400px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #msg {
+            margin-top: 15px;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h2>Appointment Registration</h2>
+    <form id="appointmentForm">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="age">Age:</label>
+        <input type="number" name="age" id="age" required>
+
+        <label for="time">Appointment Time:</label>
+        <input type="time" name="time" id="time" required>
+
+        <label for="place">Place:</label>
+        <input type="text" name="place" id="place" required>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p id="msg"></p>
+
+    <script>
+        document.getElementById('appointmentForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(e.target));
+            
+            try {
+                let response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const text = await response.text();
+                document.getElementById('msg').innerText = text;
+                e.target.reset(); // clear the form after submission
+            } catch (err) {
+                document.getElementById('msg').innerText = 'Error sending appointment. Try again!';
+                document.getElementById('msg').style.color = 'red';
+            }
+        };
+    </script>
+</body>
+</html>
